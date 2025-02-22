@@ -1,7 +1,6 @@
 package dev.anvilcraft.rg.tools.chest.menu.control;
 
 import dev.anvilcraft.rg.api.server.TranslationUtil;
-import dev.anvilcraft.rg.tools.chest.Consumer;
 import lombok.Getter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
@@ -28,9 +27,9 @@ public class Button {
     CompoundTag compoundTag = new CompoundTag();
     public static final String RG_CLEAR = "RGClear";
 
-    private final List<Consumer> turnOnConsumers = new ArrayList<>();
+    private final List<Runnable> turnOnRunnableList = new ArrayList<>();
 
-    private final List<Consumer> turnOffConsumers = new ArrayList<>();
+    private final List<Runnable> turnOffRunnableList = new ArrayList<>();
 
     public Button() {
         this(true, Items.BARRIER, Items.STRUCTURE_VOID);
@@ -155,12 +154,12 @@ public class Button {
         }
     }
 
-    public void addTurnOnFunction(Consumer consumer) {
-        this.turnOnConsumers.add(consumer);
+    public void addTurnOnFunction(Runnable Runnable) {
+        this.turnOnRunnableList.add(Runnable);
     }
 
-    public void addTurnOffFunction(Consumer consumer) {
-        this.turnOffConsumers.add(consumer);
+    public void addTurnOffFunction(Runnable Runnable) {
+        this.turnOffRunnableList.add(Runnable);
     }
 
     public void turnOnWithoutFunction() {
@@ -182,14 +181,14 @@ public class Button {
     }
 
     public void runTurnOnFunction() {
-        for (Consumer turnOnConsumer : this.turnOnConsumers) {
-            turnOnConsumer.accept();
+        for (Runnable turnOnRunnable : this.turnOnRunnableList) {
+            turnOnRunnable.run();
         }
     }
 
     public void runTurnOffFunction() {
-        for (Consumer turnOffConsumer : this.turnOffConsumers) {
-            turnOffConsumer.accept();
+        for (Runnable turnOffRunnable : this.turnOffRunnableList) {
+            turnOffRunnable.run();
         }
     }
 
