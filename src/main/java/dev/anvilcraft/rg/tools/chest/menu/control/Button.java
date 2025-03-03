@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "UnusedReturnValue"})
 public class Button {
     private boolean init = false;
     private boolean flag;
@@ -154,12 +154,14 @@ public class Button {
         }
     }
 
-    public void addTurnOnFunction(Runnable Runnable) {
+    public Button addTurnOnFunction(Runnable Runnable) {
         this.turnOnRunnableList.add(Runnable);
+        return this;
     }
 
-    public void addTurnOffFunction(Runnable Runnable) {
+    public Button addTurnOffFunction(Runnable Runnable) {
         this.turnOffRunnableList.add(Runnable);
+        return this;
     }
 
     public void turnOnWithoutFunction() {

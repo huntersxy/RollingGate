@@ -17,15 +17,17 @@ public abstract class CustomChestMenu implements Container {
         this.checkButton();
     }
 
-    public void addButton(int slot, Button button) {
+    public CustomChestMenu addButton(int slot, Button button) {
         if (getContainerSize() < (slot + 1)) {
-            return;
+            return this;
         }
         buttons.add(Map.entry(slot, button));
+        return this;
     }
 
-    public void addButtonList(ButtonList buttonList) {
+    public CustomChestMenu addButtonList(ButtonList buttonList) {
         this.buttonLists.add(buttonList);
+        return this;
     }
 
     private void checkButton() {
