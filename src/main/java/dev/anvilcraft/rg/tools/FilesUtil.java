@@ -1,11 +1,14 @@
 package dev.anvilcraft.rg.tools;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.context.CommandContext;
 import dev.anvilcraft.rg.RollingGate;
+import lombok.Setter;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +25,12 @@ import java.util.function.Function;
 
 @SuppressWarnings("unused")
 public abstract class FilesUtil {
-    private static final Gson GSON = RollingGate.GSON;
+    public static final Gson GSON = new GsonBuilder()
+        .setPrettyPrinting()
+        .registerTypeHierarchyAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
+        .create();
+    @Setter
+    protected Gson gson = GSON;
     public MinecraftServer server = null;
     private final String rgJson;
 
@@ -89,14 +97,14 @@ public abstract class FilesUtil {
         @Override
         protected void init(@NotNull BufferedReader bfr) {
             this.map.clear();
-            for (Map.Entry<String, JsonElement> entry : FilesUtil.GSON.fromJson(bfr, JsonObject.class).entrySet()) {
-                this.map.put(keyCodec.apply(entry.getKey()), FilesUtil.GSON.fromJson(entry.getValue(), this.vClass));
+            for (Map.Entry<String, JsonElement> entry : this.gson.fromJson(bfr, JsonObject.class).entrySet()) {
+                this.map.put(keyCodec.apply(entry.getKey()), this.gson.fromJson(entry.getValue(), this.vClass));
             }
         }
 
         @Override
         protected void save(@NotNull BufferedWriter bw) {
-            FilesUtil.GSON.toJson(this.map, bw);
+            this.gson.toJson(this.map, bw);
         }
     }
 
@@ -118,12 +126,12 @@ public abstract class FilesUtil {
         @Override
         protected void init(@NotNull BufferedReader bfr) {
             //noinspection unchecked
-            this.obj = (T) FilesUtil.GSON.fromJson(bfr, this.obj.getClass());
+            this.obj = (T) this.gson.fromJson(bfr, this.obj.getClass());
         }
 
         @Override
         protected void save(@NotNull BufferedWriter bw) {
-            FilesUtil.GSON.toJson(this.obj, bw);
+            this.gson.toJson(this.obj, bw);
         }
     }
 }

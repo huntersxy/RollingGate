@@ -1,20 +1,19 @@
 {
   "rolling_gate.category.base": "基础",
+  "rolling_gate.category.bugfix": "BUG修复",
+  "rolling_gate.category.survival": "生存",
   "rolling_gate.category.creative": "创造",
-  "rolling_gate.category.disabled": "禁用类",
+  "rolling_gate.category.client": "客户端",
   "rolling_gate.category.experimental": "实验性",
+  "rolling_gate.category.optimization": "优化",
+  "rolling_gate.category.feature": "特性",
+  "rolling_gate.category.command": "命令",
+  "rolling_gate.category.tnt": "TNT",
+  "rolling_gate.category.dispenser": "发射器",
+  "rolling_gate.category.disabled": "禁用类",
 
   "rolling_gate.rolling_gate.rule.language": "语言",
   "rolling_gate.rolling_gate.rule.language.desc": "设置卷帘门的默认语言",
-
-  "rolling_gate.rolling_gate.rule.view_distance": "视距",
-  "rolling_gate.rolling_gate.rule.view_distance.desc": "设置服务器的默认视距",
-
-  "rolling_gate.rolling_gate.rule.simulation_distance": "模拟距离",
-  "rolling_gate.rolling_gate.rule.simulation_distance.desc": "设置服务器的模拟距离",
-
-  "rolling_gate.rolling_gate.rule.welcome_player": "欢迎玩家",
-  "rolling_gate.rolling_gate.rule.welcome_player.desc": "当玩家登录到服务器时发送欢迎信息",
 
   "rolling_gate.command.root.version": "版本: %s",
   "rolling_gate.command.reload.success": "重载成功!",
