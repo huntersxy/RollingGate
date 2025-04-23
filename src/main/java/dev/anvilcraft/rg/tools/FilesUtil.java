@@ -6,8 +6,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.context.CommandContext;
 import dev.anvilcraft.rg.RollingGate;
-import lombok.Setter;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
@@ -21,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 @SuppressWarnings("unused")
@@ -28,8 +30,9 @@ public abstract class FilesUtil {
     public static final Gson GSON = new GsonBuilder()
         .setPrettyPrinting()
         .registerTypeHierarchyAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
+        .registerTypeHierarchyAdapter(ResourceKey.class, new DimTypeSerializer())
+        .registerTypeHierarchyAdapter(ChatFormatting.class, new ChatFormattingSerializer())
         .create();
-    @Setter
     protected Gson gson = GSON;
     public MinecraftServer server = null;
     private final String rgJson;
@@ -41,6 +44,19 @@ public abstract class FilesUtil {
     public void init(@NotNull CommandContext<CommandSourceStack> context) {
         MinecraftServer server1 = context.getSource().getServer();
         this.init(server1);
+    }
+
+    public void setGson(Gson gson) {
+        this.gson = gson;
+    }
+
+    public void setGson(@NotNull Consumer<GsonBuilder> gson) {
+        GsonBuilder builder = new GsonBuilder()
+            .setPrettyPrinting()
+            .registerTypeHierarchyAdapter(ResourceKey.class, new DimTypeSerializer())
+            .registerTypeHierarchyAdapter(ResourceLocation.class, new ResourceLocation.Serializer());
+        gson.accept(builder);
+        this.gson = builder.create();
     }
 
     protected abstract void createDefault(@NotNull File file) throws IOException;
