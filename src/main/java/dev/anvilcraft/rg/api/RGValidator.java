@@ -222,15 +222,15 @@ public interface RGValidator<T> {
          * @param stack    命令源堆栈，用于检查权限级别
          * @return 如果供应商提供的命令规则满足权限级别，则返回true，否则返回false
          */
-        public static boolean hasPermission(@NotNull Supplier<String> supplier, @NotNull CommandSourceStack stack) {
-            String s = supplier.get();
+        public static boolean hasPermission(@NotNull Supplier<?> supplier, @NotNull CommandSourceStack stack) {
+            String s = String.valueOf(supplier.get());
             return switch (s) {
                 case "0" -> stack.hasPermission(Commands.LEVEL_ALL);
                 case "1" -> stack.hasPermission(Commands.LEVEL_MODERATORS);
                 case "ops", "2" -> stack.hasPermission(Commands.LEVEL_GAMEMASTERS);
                 case "3" -> stack.hasPermission(Commands.LEVEL_ADMINS);
                 case "4" -> stack.hasPermission(Commands.LEVEL_OWNERS);
-                case "true" -> true;
+                case "true", "TRUE" -> true;
                 default -> false;
             };
         }
