@@ -112,54 +112,14 @@
 
 ## 编写附属 | Write Additional
 
-* 编写一个类实现 `dev.anvilcraft.rg.api.RGAdditional`
-* Write a class implement `dev.anvilcraft.rg.api.RGAdditional`
+* 编写一个类添加规则
+* Write a class addition rule
 
 ```java
 
-@Mod("your_mod_id")
-public class YourMod {
-    public YourMod(IEventBus modEventBus, @NotNull ModContainer modContainer) {
-        modContainer.registerExtensionPoint(RGAdditional.class, new YourAdditional());
-    }
-}
-
-public class YourAdditional implements RGAdditional {
-    @Override
-    public void loadServerRules(@NotNull ServerRGRuleManager manager) {
-        manager.register(YourServerRules.class);
-        TranslationUtil.loadLanguage(YourMod.class, "your_mod_id", "zh_cn");
-        TranslationUtil.loadLanguage(YourMod.class, "your_mod_id", "en_us");
-    }
-
-    @Override
-    public void loadClientRules(@NotNull ClientRGRuleManager manager) {
-        manager.register(YourClientRules.class);
-    }
-}
-```
-
-* 亦可以让你的模组主类实现 `dev.anvilcraft.rg.api.RGAdditional`
-* You can also enable your mod main class to implement `dev.anvilcraft.rg.api.RGAdditional`
-
-```java
-
-@Mod('your_mod_id')
-public class YourMod implements RGAdditional {
-    public YourMod(IEventBus modEventBus, @NotNull ModContainer modContainer) {
-        modContainer.registerExtensionPoint(RGAdditional.class, this);
-    }
-
-    @Override
-    public void loadServerRules(@NotNull RGRuleManager manager) {
-        manager.register(YourServerRules.class);
-        TranslationUtil.loadLanguage(YourMod.class, "your_mod_id", "zh_cn");
-        TranslationUtil.loadLanguage(YourMod.class, "your_mod_id", "en_us");
-    }
-
-    @Override
-    public void loadClientRules(@NotNull ClientRGRuleManager manager) {
-        manager.register(YourClientRules.class);
-    }
+@RGServerRules(value = "your_mod_id", languages = {"zh_cn", "en_us"})
+public class YourModServerRules {
+    @Rule(allowed = {"your_rule_value1", "your_rule_value2"}, categories = "your_rule_category")
+    public static String yourRule = "your_rule_value1";
 }
 ```

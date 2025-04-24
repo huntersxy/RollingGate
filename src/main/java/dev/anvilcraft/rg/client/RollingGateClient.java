@@ -16,12 +16,14 @@ public class RollingGateClient {
     private static final ClientRGRuleManager CLIENT_RULE_MANAGER = new ClientRGRuleManager(RollingGate.MODID);
 
     @SubscribeEvent
-    public static void onLoadComplete(FMLLoadCompleteEvent event) {
+    public static void onLoadComplete(FMLLoadCompleteEvent event) throws ClassNotFoundException {
         ModList.get().forEachModContainer((modId, modContainer) -> {
             RollingGateClient.CLIENT_RULE_MANAGER.setNamespace(modId);
+            @SuppressWarnings("deprecation")
             Optional<RGAdditional> additional = modContainer.getCustomExtension(RGAdditional.class);
             additional.ifPresent(add -> add.loadClientRules(RollingGateClient.CLIENT_RULE_MANAGER));
         });
         RollingGateClient.CLIENT_RULE_MANAGER.reInit();
+        RollingGateClient.CLIENT_RULE_MANAGER.compileContent();
     }
 }

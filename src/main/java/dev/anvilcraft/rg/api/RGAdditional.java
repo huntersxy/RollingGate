@@ -9,6 +9,7 @@ import net.neoforged.fml.IExtensionPoint;
  * 用于在服务器和客户端加载特定规则。这个接口允许实现类
  * 在需要时自定义规则加载逻辑
  */
+@Deprecated
 public interface RGAdditional extends IExtensionPoint {
 
     /**

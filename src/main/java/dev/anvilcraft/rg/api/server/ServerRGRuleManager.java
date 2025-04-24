@@ -7,6 +7,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import dev.anvilcraft.rg.RollingGate;
 import dev.anvilcraft.rg.api.ConfigUtil;
 import dev.anvilcraft.rg.api.RGEnvironment;
 import dev.anvilcraft.rg.api.RGRule;
@@ -26,12 +27,19 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.LoadingModList;
+import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
+import net.neoforged.fml.loading.progress.ProgressMeter;
+import net.neoforged.fml.loading.progress.StartupNotificationManager;
 import net.neoforged.neoforgespi.language.IModInfo;
+import net.neoforged.neoforgespi.language.ModFileScanData;
 import org.apache.commons.lang3.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.annotation.ElementType;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -45,6 +53,34 @@ public class ServerRGRuleManager extends RGRuleManager {
     private final LevelResource worldConfigPath;
     // 用于存储世界特定规则配置的映射
     private final Map<RGRule<?>, Object> worldConfig = new HashMap<>();
+
+    public static final String ANNOTATION_NAME = "L" + RGServerRules.class.getName().replace(".", "/") + ";";
+
+    public void compileContent() throws ClassNotFoundException {
+        ProgressMeter meter = StartupNotificationManager.addProgressBar("Load Server Rules", LoadingModList.get().getModFiles().size());
+        for (ModFileInfo modFile : LoadingModList.get().getModFiles()) {
+            meter.increment();
+            @SuppressWarnings("UnstableApiUsage")
+            ModFileScanData scanData = modFile.getFile().getScanResult();
+            for (ModFileScanData.AnnotationData annotation : scanData.getAnnotations()) {
+                if (annotation.annotationType().getDescriptor().equals(ANNOTATION_NAME) && annotation.targetType() == ElementType.TYPE) {
+                    System.out.println(annotation.annotationData().get("languages"));
+                    @SuppressWarnings("unchecked")
+                    List<String> languages = (List<String>) annotation.annotationData().get("languages");
+                    if (languages == null) languages = List.of("en_us");
+                    String modId = (String) annotation.annotationData().get("value");
+                    if (modId == null) modId = RollingGate.MODID;
+                    String memberName = annotation.memberName();
+                    Class<?> clazz = Class.forName(memberName);
+                    this.register(clazz);
+                    for (String language : languages) {
+                        TranslationUtil.loadLanguage(clazz, modId, language);
+                    }
+                }
+            }
+        }
+        StartupNotificationManager.popBar(meter);
+    }
 
     /**
      * 构造函数
