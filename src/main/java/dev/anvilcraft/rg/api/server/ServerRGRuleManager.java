@@ -72,7 +72,7 @@ public class ServerRGRuleManager extends RGRuleManager {
                     if (modId == null) modId = RollingGate.MODID;
                     String memberName = annotation.memberName();
                     Class<?> clazz = Class.forName(memberName);
-                    this.register(clazz);
+                    this.register(clazz, modId);
                     for (String language : languages) {
                         TranslationUtil.loadLanguage(clazz, modId, language);
                     }

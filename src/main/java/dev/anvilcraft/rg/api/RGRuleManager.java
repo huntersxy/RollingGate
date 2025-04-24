@@ -147,8 +147,18 @@ public class RGRuleManager {
      * @param rules 规则类
      */
     public void register(Class<?> rules) {
+        this.register(rules, this.namespace);
+    }
+
+    /**
+     * 注册规则类
+     *
+     * @param rules 规则类
+     * @param namespace 命名空间
+     */
+    public void register(Class<?> rules, String namespace) {
         // 创建并添加规则到管理器
-        RGRuleManager.of(this.namespace, rules).forEach(this::addRule);
+        RGRuleManager.of(namespace, rules).forEach(this::addRule);
     }
 
     /**

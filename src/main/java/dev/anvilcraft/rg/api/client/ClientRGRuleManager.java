@@ -1,5 +1,6 @@
 package dev.anvilcraft.rg.api.client;
 
+import dev.anvilcraft.rg.RollingGate;
 import dev.anvilcraft.rg.api.RGEnvironment;
 import dev.anvilcraft.rg.api.RGRuleManager;
 import net.neoforged.fml.loading.LoadingModList;
@@ -37,7 +38,9 @@ public class ClientRGRuleManager extends RGRuleManager {
                 if (annotation.annotationType().getDescriptor().equals(ANNOTATION_NAME) && annotation.targetType() == ElementType.TYPE) {
                     String memberName = annotation.memberName();
                     Class<?> clazz = Class.forName(memberName);
-                    this.register(clazz);
+                    String modId = (String) annotation.annotationData().get("value");
+                    if (modId == null) modId = RollingGate.MODID;
+                    this.register(clazz, modId);
                 }
             }
         }
