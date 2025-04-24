@@ -78,12 +78,14 @@ public record RGRule<T>(String namespace, Class<T> type, RGEnvironment environme
             }
         }
         RGCodec<?> rgCodec = RGRule.CODECS.getOrDefault(type.getTypeName(), null);
+        String[] allowed = rule.allowed();
         // 确保类型支持
         if (rgCodec == null) {
             throw RGRuleException.unsupportedType(name, type);
         } else if (rgCodec.clazz() == Boolean.class) {
-            // 为Boolean类型添加默认验证器
+            // 为Boolean类型添加默认验证器和允许值
             validators.add((RGValidator<T>) new RGValidator.BooleanValidator());
+            if (allowed.length < 1) allowed = new String[]{"true", "false"};
         } else if (rgCodec.clazz() == String.class && validators.isEmpty()) {
             // 为String类型添加默认验证器
             validators.add((RGValidator<T>) new RGValidator.StringValidator());
@@ -95,7 +97,7 @@ public record RGRule<T>(String namespace, Class<T> type, RGEnvironment environme
                 rule.env(),
                 rule.categories(),
                 serialize,
-                rule.allowed(),
+                allowed,
                 validators,
                 (T) field.get(null),
                 field,

@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class PosUtils {
     public static @NotNull MutableComponent xaero(String desc, double x, double y, double z, @NotNull ResourceKey<Level> dimType) {
         int color = dimType == Level.OVERWORLD ? 10 :
