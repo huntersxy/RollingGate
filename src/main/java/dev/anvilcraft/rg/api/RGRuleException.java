@@ -67,16 +67,6 @@ public class RGRuleException extends RuntimeException {
     }
 
     /**
-     * 静态工厂方法，用于创建表示字段未标注@Rule错误的异常
-     *
-     * @param name 字段名
-     * @return 创建的异常实例
-     */
-    public static @NotNull RGRuleException notAnnotated(@NotNull String name) {
-        return new RGRuleException("Field %s is not annotated with @Rule", name);
-    }
-
-    /**
      * 静态工厂方法，用于创建表示创建规则失败错误的异常
      *
      * @param name 字段名

@@ -56,7 +56,7 @@ public class RGRuleManager {
     /**
      * 构造函数，初始化规则管理器
      *
-     * @param namespace 命名空间
+     * @param namespace   命名空间
      * @param environment 环境对象
      */
     public RGRuleManager(String namespace, @NotNull RGEnvironment environment) {
@@ -128,7 +128,7 @@ public class RGRuleManager {
      * 根据命名空间和规则类创建规则列表
      *
      * @param namespace 命名空间
-     * @param rules 规则类
+     * @param rules     规则类
      * @return 返回创建的规则列表
      */
     private static @NotNull List<RGRule<?>> of(String namespace, @NotNull Class<?> rules) {
@@ -136,7 +136,8 @@ public class RGRuleManager {
         // 遍历规则类的每个字段
         for (Field field : rules.getDeclaredFields()) {
             RGRule.checkType(field);
-            ruleList.add(RGRule.of(namespace, field));
+            RGRule<?> rule = RGRule.of(namespace, field);
+            if (rule != null) ruleList.add(rule);
         }
         return ruleList;
     }
@@ -153,7 +154,7 @@ public class RGRuleManager {
     /**
      * 注册规则类
      *
-     * @param rules 规则类
+     * @param rules     规则类
      * @param namespace 命名空间
      */
     public void register(Class<?> rules, String namespace) {

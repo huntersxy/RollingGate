@@ -6,6 +6,7 @@ import dev.anvilcraft.rg.api.event.RGRuleChangeEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -54,8 +55,11 @@ public record RGRule<T>(String namespace, Class<T> type, RGEnvironment environme
      * @throws RGRuleException 如果配置项不合法或不支持，则抛出此异常
      */
     @SuppressWarnings("unchecked")
-    public static <T> @NotNull RGRule<T> of(String namespace, @NotNull Field field) {
+    public static <T> @Nullable RGRule<T> of(String namespace, @NotNull Field field) {
         String name = field.getName();
+        Rule rule = field.getAnnotation(Rule.class);
+        // 确保配置项上有Rule注解
+        if (rule == null) return null;
         // 检查配置项是否是静态的
         if (!Modifier.isStatic(field.getModifiers())) throw RGRuleException.notStatic(name);
         // 检查配置项是否是公开的
@@ -63,9 +67,6 @@ public record RGRule<T>(String namespace, Class<T> type, RGEnvironment environme
         // 检查配置项是否不是final的
         if (Modifier.isFinal(field.getModifiers())) throw RGRuleException.beFinal(name);
         Class<?> type = RGRule.checkType(field);
-        Rule rule = field.getAnnotation(Rule.class);
-        // 确保配置项上有Rule注解
-        if (rule == null) throw RGRuleException.notAnnotated(name);
         String serialize = rule.serialize().isEmpty() ? RGRule.caseToSnake(name) : rule.serialize();
         RGRule.checkSerialize(serialize);
         List<RGValidator<T>> validators = new ArrayList<>();
