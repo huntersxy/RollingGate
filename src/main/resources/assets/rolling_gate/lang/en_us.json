@@ -26,5 +26,14 @@
 
   "rolling_gate.chest_menu.button.none": "None",
   "rolling_gate.chest_menu.button.on": "ON",
-  "rolling_gate.chest_menu.button.off": "OFF"
+  "rolling_gate.chest_menu.button.off": "OFF",
+
+  "rolling_gate.configuration.base": "BASE",
+  "rolling_gate.configuration.base.button": "BASE",
+  "rolling_gate.configuration.base.tooltip": "BASE",
+  "rolling_gate.configuration.windowResizable": "Window Resizable",
+  "rolling_gate.configuration.windowResizable.tooltip": "Allows change the size of the game window",
+  "rolling_gate.configuration.title": "Rolling Gate Settings",
+  "rolling_gate.configuration.section.rolling.gate.client.toml": "rolling_gate-client.toml",
+  "rolling_gate.configuration.section.rolling.gate.client.toml.title": "Rolling Gate Client"
 }

@@ -29,6 +29,14 @@ public @interface Rule {
     String serialize() default "";
 
     /**
+     * 指定配置项是否只允许指定的值，默认为false
+     * 这有助于限制配置项的值，确保其符合预期的规则和约束
+     *
+     * @return 布尔值，表示配置项是否只允许指定的值
+     */
+    boolean onlyAllowed() default false;
+
+    /**
      * 定义配置项允许的值列表，默认为空数组
      * 这有助于限制配置项的可能值，确保配置的有效性和一致性
      *
@@ -43,6 +51,10 @@ public @interface Rule {
      * @return 字符串数组，表示配置项所属的类别
      */
     String[] categories() default {};
+
+    String min() default "-inf";
+
+    String max() default "inf";
 
     /**
      * 定义配置项使用的验证器类列表，默认为空数组

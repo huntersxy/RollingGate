@@ -12,8 +12,8 @@ import org.jetbrains.annotations.NotNull;
 @EventBusSubscriber(modid = RollingGate.MODID)
 public class RGRuleChangeEventListener {
     @SubscribeEvent
-    public static void onRuleChange(@NotNull RGRuleChangeEvent.Server<Integer> event) {
-        RGRule<Integer> rule = event.getRule();
+    public static void onRuleChange(@NotNull RGRuleChangeEvent.Server<?> event) {
+        RGRule<?> rule = event.getRule();
         if (RGRuleChangeEventListener.isCommand(rule)) {
             ModCommands.notifyPlayersCommandsChanged(event.getServer());
         }

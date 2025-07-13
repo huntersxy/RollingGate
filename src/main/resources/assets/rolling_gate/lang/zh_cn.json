@@ -26,5 +26,14 @@
 
   "rolling_gate.chest_menu.button.none": "暂无功能",
   "rolling_gate.chest_menu.button.on": "开启",
-  "rolling_gate.chest_menu.button.off": "关闭"
+  "rolling_gate.chest_menu.button.off": "关闭",
+
+  "rolling_gate.configuration.base": "基础",
+  "rolling_gate.configuration.base.button": "基础",
+  "rolling_gate.configuration.base.tooltip": "基础",
+  "rolling_gate.configuration.windowResizable": "窗口大小可变",
+  "rolling_gate.configuration.windowResizable.tooltip": "允许更改游戏窗口的大小",
+  "rolling_gate.configuration.title": "卷帘门设置",
+  "rolling_gate.configuration.section.rolling.gate.client.toml": "rolling_gate-client.toml",
+  "rolling_gate.configuration.section.rolling.gate.client.toml.title": "卷帘门 客户端"
 }

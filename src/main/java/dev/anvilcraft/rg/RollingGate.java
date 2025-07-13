@@ -1,22 +1,21 @@
 package dev.anvilcraft.rg;
 
 import com.mojang.logging.LogUtils;
-import dev.anvilcraft.rg.api.RGAdditional;
 import dev.anvilcraft.rg.api.server.ServerRGRuleManager;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import java.util.Optional;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 @Mod(RollingGate.MODID)
 public class RollingGate {
@@ -25,20 +24,18 @@ public class RollingGate {
     private static final ServerRGRuleManager SERVER_RULE_MANAGER = new ServerRGRuleManager(RollingGate.MODID);
 
     public RollingGate(@NotNull IEventBus modEventBus, @SuppressWarnings("unused") @NotNull ModContainer modContainer) throws ClassNotFoundException {
-        modEventBus.addListener(this::onLoadComplete);
         NeoForge.EVENT_BUS.addListener(this::onServerStarting);
         NeoForge.EVENT_BUS.addListener(this::registerCommand);
         SERVER_RULE_MANAGER.compileContent();
-    }
-
-    @SubscribeEvent
-    public void onLoadComplete(FMLLoadCompleteEvent event) {
-        ModList.get().forEachModContainer((modId, modContainer) -> {
-            RollingGate.SERVER_RULE_MANAGER.setNamespace(modId);
-            @SuppressWarnings("deprecation")
-            Optional<RGAdditional> additional = modContainer.getCustomExtension(RGAdditional.class);
-            additional.ifPresent(add -> add.loadServerRules(RollingGate.SERVER_RULE_MANAGER));
-        });
+        if (FMLEnvironment.dist.isClient()) {
+            Class<?> clientClass = RollingGate.class.getClassLoader().loadClass("dev.anvilcraft.rg.client.RollingGateClient");
+            try {
+                Method setup = clientClass.getMethod("onClientSetup", ModContainer.class);
+                setup.invoke(null, modContainer);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                RollingGate.LOGGER.error(e.getMessage(), e);
+            }
+        }
     }
 
     @SubscribeEvent

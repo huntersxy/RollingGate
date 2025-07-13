@@ -2,14 +2,19 @@ package dev.anvilcraft.rg.api.client;
 
 import dev.anvilcraft.rg.RollingGate;
 import dev.anvilcraft.rg.api.RGEnvironment;
+import dev.anvilcraft.rg.api.RGRule;
 import dev.anvilcraft.rg.api.RGRuleManager;
+import lombok.Getter;
 import net.neoforged.fml.loading.LoadingModList;
 import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
 import net.neoforged.fml.loading.progress.ProgressMeter;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforgespi.language.ModFileScanData;
 
 import java.lang.annotation.ElementType;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * ClientRGRuleManager类是RGRuleManager的子类，专门用于客户端环境
@@ -45,6 +50,67 @@ public class ClientRGRuleManager extends RGRuleManager {
             }
         }
         StartupNotificationManager.popBar(meter);
+        this.initModConfigSpecs();
+    }
+
+    @Getter
+    private final Map<RGRule<?>, ModConfigSpec.ConfigValue<?>> configValueMap = new HashMap<>();
+
+    @Getter
+    private final Map<String, ModConfigSpec> specMap = new HashMap<>();
+
+    public <V extends Comparable<? super V>> void initModConfigSpecs() {
+        Map<String, ModConfigSpec.Builder> builders = new HashMap<>();
+        for (Map.Entry<String, RGRule<?>> entry : this.rules.entrySet()) {
+            String key = entry.getKey();
+            RGRule<?> rule = entry.getValue();
+            String namespace = rule.namespace();
+            ModConfigSpec.Builder builder = builders.getOrDefault(namespace, new ModConfigSpec.Builder());
+            ModConfigSpec.ConfigValue<?> spec;
+            Class<?> type = rule.codec().clazz();
+            if (rule.categories().length >= 1) {
+                builder.push(rule.categories()[0]);
+            }
+            if (type == Boolean.class) {
+                spec = builder.define(rule.name(), (boolean) rule.defaultValue());
+            } else if (rule.onlyAllowed()) {
+                spec = builder.defineInList(key, rule.defaultValue(), rule.getTypedAllowed());
+            } else if (Number.class.isAssignableFrom(type)) {
+                Object min = RGRule.getRuleMin(rule.min(), rule.codec());
+                Object max = RGRule.getRuleMax(rule.max(), rule.codec());
+                //noinspection unchecked
+                spec = builder.defineInRange(rule.name(), (V) rule.defaultValue(), (V) min, (V) max, (Class<V>) type);
+            } else {
+                spec = builder.define(key, rule.defaultValue());
+            }
+            if (rule.categories().length >= 1) {
+                builder.pop();
+            }
+            configValueMap.put(rule, spec);
+            builders.put(namespace, builder);
+        }
+        for (Map.Entry<String, ModConfigSpec.Builder> entry : builders.entrySet()) {
+            ModConfigSpec.Builder builder = entry.getValue();
+            ModConfigSpec spec = builder.build();
+            specMap.put(entry.getKey(), spec);
+        }
+    }
+
+    @Override
+    public void reInit() {
+        for (Map.Entry<RGRule<?>, ModConfigSpec.ConfigValue<?>> entry : this.configValueMap.entrySet()) {
+            RGRule<?> key = entry.getKey();
+            ModConfigSpec.ConfigValue<?> value = entry.getValue();
+            key.setFieldValue(value.get().toString());
+        }
+    }
+
+    @SuppressWarnings({"unchecked", "unused"})
+    public <T> void onRuleChange(RGRule<?> rule, Object oldValue, Object newValue) {
+        ModConfigSpec.ConfigValue<T> value = (ModConfigSpec.ConfigValue<T>) this.configValueMap.get(rule);
+        if (value == null) return;
+        T value1 = (T) newValue;
+        if (!value.get().equals(value1)) value.set(value1);
     }
 }
 

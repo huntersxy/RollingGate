@@ -3,6 +3,7 @@ package dev.anvilcraft.rg.api;
 import com.google.gson.JsonElement;
 import dev.anvilcraft.rg.RollingGate;
 import dev.anvilcraft.rg.api.event.RGRuleChangeEvent;
+import dev.anvilcraft.rg.api.event.RGValidatorNotPassedEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
@@ -11,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +23,7 @@ import java.util.Map;
  * @param <T> 配置项的类型
  */
 public record RGRule<T>(String namespace, Class<T> type, RGEnvironment environment, String[] categories,
-                        String serialize, String[] allowed,
+                        String serialize, boolean onlyAllowed, String[] allowed, String min, String max,
                         List<RGValidator<T>> validators, T defaultValue, Field field, RGCodec<T> codec) {
 
     /**
@@ -90,6 +92,74 @@ public record RGRule<T>(String namespace, Class<T> type, RGEnvironment environme
         } else if (rgCodec.clazz() == String.class && validators.isEmpty()) {
             // 为String类型添加默认验证器
             validators.add((RGValidator<T>) new RGValidator.StringValidator());
+        } else if (Number.class.isAssignableFrom(rgCodec.clazz())) {
+            if (rgCodec.clazz() == Integer.class) {
+                int min = (int) RGRule.getRuleMin(rule.min(), rgCodec);
+                int max = (int) RGRule.getRuleMax(rule.max(), rgCodec);
+                validators.add((RGValidator<T>)
+                    new RGValidator.IntegerValidator() {
+                        @Override
+                        public Map.@NotNull Entry<Integer, Integer> getRange() {
+                            return Map.entry(min, max);
+                        }
+                    }
+                );
+            } else if (rgCodec.clazz() == Double.class) {
+                double min = (double) RGRule.getRuleMin(rule.min(), rgCodec);
+                double max = (double) RGRule.getRuleMax(rule.max(), rgCodec);
+                validators.add((RGValidator<T>)
+                    new RGValidator.DoubleValidator() {
+                        @Override
+                        public Map.@NotNull Entry<Double, Double> getRange() {
+                            return Map.entry(min, max);
+                        }
+                    }
+                );
+            } else if (rgCodec.clazz() == Float.class) {
+                float min = (float) RGRule.getRuleMin(rule.min(), rgCodec);
+                float max = (float) RGRule.getRuleMax(rule.max(), rgCodec);
+                validators.add((RGValidator<T>)
+                    new RGValidator.FloatValidator() {
+                        @Override
+                        public Map.@NotNull Entry<Float, Float> getRange() {
+                            return Map.entry(min, max);
+                        }
+                    }
+                );
+            } else if (rgCodec.clazz() == Short.class) {
+                short min = (short) RGRule.getRuleMin(rule.min(), rgCodec);
+                short max = (short) RGRule.getRuleMax(rule.max(), rgCodec);
+                validators.add((RGValidator<T>)
+                    new RGValidator.ShortValidator() {
+                        @Override
+                        public Map.@NotNull Entry<Short, Short> getRange() {
+                            return Map.entry(min, max);
+                        }
+                    }
+                );
+            } else if (rgCodec.clazz() == Byte.class) {
+                byte min = (byte) RGRule.getRuleMin(rule.min(), rgCodec);
+                byte max = (byte) RGRule.getRuleMax(rule.max(), rgCodec);
+                validators.add((RGValidator<T>)
+                    new RGValidator.ByteValidator() {
+                        @Override
+                        public Map.@NotNull Entry<Byte, Byte> getRange() {
+                            return Map.entry(min, max);
+                        }
+                    }
+                );
+            } else if (rgCodec.clazz() == Long.class) {
+                long min = (long) RGRule.getRuleMin(rule.min(), rgCodec);
+                long max = (long) RGRule.getRuleMax(rule.max(), rgCodec);
+                validators.add((RGValidator<T>)
+                    new RGValidator.LongValidator() {
+                        @Override
+                        public Map.@NotNull Entry<Long, Long> getRange() {
+                            return Map.entry(min, max);
+                        }
+                    }
+                );
+            }
         }
         try {
             return new RGRule<>(
@@ -98,7 +168,10 @@ public record RGRule<T>(String namespace, Class<T> type, RGEnvironment environme
                 rule.env(),
                 rule.categories(),
                 serialize,
+                rule.onlyAllowed(),
                 allowed,
+                rule.min(),
+                rule.max(),
                 validators,
                 (T) field.get(null),
                 field,
@@ -107,6 +180,44 @@ public record RGRule<T>(String namespace, Class<T> type, RGEnvironment environme
         } catch (Exception e) {
             throw RGRuleException.createRuleFailed(name);
         }
+    }
+
+    public static Object getRuleMin(String min, @NotNull RGCodec<?> rgCodec) {
+        if (Number.class.isAssignableFrom(rgCodec.clazz())) {
+            if (rgCodec.clazz() == Integer.class) {
+                return "-inf".equals(min) ? Integer.MIN_VALUE : (int) rgCodec.decode(min);
+            } else if (rgCodec.clazz() == Double.class) {
+                return "-inf".equals(min) ? Double.MIN_VALUE : (double) rgCodec.decode(min);
+            } else if (rgCodec.clazz() == Float.class) {
+                return "-inf".equals(min) ? Float.MIN_VALUE : (float) rgCodec.decode(min);
+            } else if (rgCodec.clazz() == Short.class) {
+                return "-inf".equals(min) ? Short.MIN_VALUE : (short) rgCodec.decode(min);
+            } else if (rgCodec.clazz() == Byte.class) {
+                return "-inf".equals(min) ? Byte.MIN_VALUE : (byte) rgCodec.decode(min);
+            } else if (rgCodec.clazz() == Long.class) {
+                return "-inf".equals(min) ? Long.MIN_VALUE : (long) rgCodec.decode(min);
+            }
+        }
+        throw new UnsupportedOperationException("Unsupported type: " + rgCodec.clazz());
+    }
+
+    public static Object getRuleMax(String max, @NotNull RGCodec<?> rgCodec) {
+        if (Number.class.isAssignableFrom(rgCodec.clazz())) {
+            if (rgCodec.clazz() == Integer.class) {
+                return "inf".equals(max) ? Integer.MAX_VALUE : (int) rgCodec.decode(max);
+            } else if (rgCodec.clazz() == Double.class) {
+                return "inf".equals(max) ? Double.MAX_VALUE : (double) rgCodec.decode(max);
+            } else if (rgCodec.clazz() == Float.class) {
+                return "inf".equals(max) ? Float.MAX_VALUE : (float) rgCodec.decode(max);
+            } else if (rgCodec.clazz() == Short.class) {
+                return "inf".equals(max) ? Short.MAX_VALUE : (short) rgCodec.decode(max);
+            } else if (rgCodec.clazz() == Byte.class) {
+                return "inf".equals(max) ? Byte.MAX_VALUE : (byte) rgCodec.decode(max);
+            } else if (rgCodec.clazz() == Long.class) {
+                return "inf".equals(max) ? Long.MAX_VALUE : (long) rgCodec.decode(max);
+            }
+        }
+        throw new UnsupportedOperationException("Unsupported type: " + rgCodec.clazz());
     }
 
     /**
@@ -131,6 +242,10 @@ public record RGRule<T>(String namespace, Class<T> type, RGEnvironment environme
         } catch (IllegalAccessException e) {
             throw RGRuleException.illegalAccess(this.name());
         }
+    }
+
+    public List<T> getTypedAllowed() {
+        return Arrays.stream(this.allowed).map(this.codec::decode).toList();
     }
 
 
@@ -194,6 +309,7 @@ public record RGRule<T>(String namespace, Class<T> type, RGEnvironment environme
         try {
             for (RGValidator<T> validator : this.validators) {
                 if (!validator.validate((T) this.field.get(null), value)) {
+                    NeoForge.EVENT_BUS.post(new RGValidatorNotPassedEvent<>(this, this.getValue()));
                     throw new RGRuleException("Illegal value: %s, reason: %s", value, validator.reason());
                 }
             }

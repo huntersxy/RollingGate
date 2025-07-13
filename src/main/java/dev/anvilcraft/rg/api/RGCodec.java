@@ -13,6 +13,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
@@ -32,6 +33,7 @@ public class RGCodec<T> implements JsonDeserializer<T>, JsonSerializer<T> {
     // 编码函数，将指定类型转换为字符串
     private final Function<T, String> encoder;
     // 是否锁定，表示该类型是否具有固定的编解码逻辑
+    @Getter
     private final boolean isBuiltIn;
 
     // 预定义的字符串类型编解码器
@@ -87,15 +89,6 @@ public class RGCodec<T> implements JsonDeserializer<T>, JsonSerializer<T> {
      */
     public Class<T> clazz() {
         return this.clazz;
-    }
-
-    /**
-     * 检查编解码器是否内置
-     * 
-     * @return 是否内置
-     */
-    public boolean isBuiltIn() {
-        return isBuiltIn;
     }
 
     /**
