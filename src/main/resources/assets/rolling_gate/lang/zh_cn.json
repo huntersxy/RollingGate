@@ -30,7 +30,7 @@
 
   "rolling_gate.configuration.base": "基础",
   "rolling_gate.configuration.base.button": "基础",
-  "rolling_gate.configuration.base.tooltip": "基础",
+  "rolling_gate.configuration.base.tooltip": "一些基础的设定项",
   "rolling_gate.configuration.windowResizable": "窗口大小可变",
   "rolling_gate.configuration.windowResizable.tooltip": "允许更改游戏窗口的大小",
   "rolling_gate.configuration.title": "卷帘门设置",

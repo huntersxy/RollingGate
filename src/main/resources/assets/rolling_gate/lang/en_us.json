@@ -30,7 +30,7 @@
 
   "rolling_gate.configuration.base": "BASE",
   "rolling_gate.configuration.base.button": "BASE",
-  "rolling_gate.configuration.base.tooltip": "BASE",
+  "rolling_gate.configuration.base.tooltip": "Some basic settings",
   "rolling_gate.configuration.windowResizable": "Window Resizable",
   "rolling_gate.configuration.windowResizable.tooltip": "Allows change the size of the game window",
   "rolling_gate.configuration.title": "Rolling Gate Settings",
