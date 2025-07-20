@@ -13,7 +13,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforgespi.language.ModFileScanData;
 
 import java.lang.annotation.ElementType;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -23,6 +23,12 @@ import java.util.Map;
 public class ClientRGRuleManager extends RGRuleManager {
 
     public static final String ANNOTATION_NAME = "L" + RGClientRules.class.getName().replace(".", "/") + ";";
+
+    @Getter
+    private final Map<RGRule<?>, ModConfigSpec.ConfigValue<?>> configValueMap = new LinkedHashMap<>();
+
+    @Getter
+    private final Map<String, ModConfigSpec> specMap = new LinkedHashMap<>();
 
     /**
      * 初始化ClientRGRuleManager对象，设置命名空间和环境
@@ -53,14 +59,8 @@ public class ClientRGRuleManager extends RGRuleManager {
         this.initModConfigSpecs();
     }
 
-    @Getter
-    private final Map<RGRule<?>, ModConfigSpec.ConfigValue<?>> configValueMap = new HashMap<>();
-
-    @Getter
-    private final Map<String, ModConfigSpec> specMap = new HashMap<>();
-
     public <V extends Comparable<? super V>> void initModConfigSpecs() {
-        Map<String, ModConfigSpec.Builder> builders = new HashMap<>();
+        Map<String, ModConfigSpec.Builder> builders = new LinkedHashMap<>();
         for (Map.Entry<String, RGRule<?>> entry : this.rules.entrySet()) {
             String key = entry.getKey();
             RGRule<?> rule = entry.getValue();
