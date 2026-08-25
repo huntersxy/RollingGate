@@ -143,6 +143,9 @@ tasks.register<Copy>("buildAndCollect") {
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
+            groupId = property("mod_group_id") as String
+            artifactId = property("mod_name") as String
+            version = project.version as String
             from(components["java"])
             artifact(tasks.named("sourcesJar"))
         }
