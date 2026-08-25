@@ -82,6 +82,7 @@ jobs:
         continue-on-error: true
 
       - name: gametest
+        timeout-minutes: 15
         uses: Anvil-Dev/dedicated-server-launch-test@universal
         with:
           minecraft_version: ${{ steps.properties.outputs.minecraft_version }}

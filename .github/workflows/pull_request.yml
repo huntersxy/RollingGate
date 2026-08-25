@@ -74,6 +74,7 @@ jobs:
           path: versions/${{ matrix.mcversion }}/build/libs/${{ steps.version.outputs.jar }}
 
       - name: gametest
+        timeout-minutes: 15
         uses: Anvil-Dev/dedicated-server-launch-test@universal
         with:
           minecraft_version: ${{ steps.properties.outputs.minecraft_version }}
