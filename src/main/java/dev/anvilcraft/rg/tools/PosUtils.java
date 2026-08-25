@@ -48,7 +48,10 @@ public class PosUtils {
                                 ChatFormatting.LIGHT_PURPLE :
                                 ChatFormatting.AQUA
                 )
+                //? if <1.21.8
                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(dimension.location().toString())))
+                //? if >=1.21.8
+                /*.withHoverEvent(new HoverEvent.ShowText(Component.literal(dimension.location().toString())))*/
         );
         double scale = 0;
         ResourceKey<Level> toDimension = Level.END;
@@ -68,7 +71,10 @@ public class PosUtils {
                             ChatFormatting.GREEN :
                             ChatFormatting.AQUA
                 )
+                //? if <1.21.8
                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(toDimension.location().toString())))
+                //? if >=1.21.8
+                /*.withHoverEvent(new HoverEvent.ShowText(Component.literal(toDimension.location().toString())))*/
         );
         return scale > 0 ?
             List.of(pos, xaero(desc, x, y, z, dimension), toPos, xaero(desc, x * scale, y, z * scale, toDimension)) :
@@ -79,7 +85,10 @@ public class PosUtils {
         player.addEffect(new MobEffectInstance(MobEffects.GLOWING, 200, 0, true, false));
         Vec3 position = player.position();
         ResourceKey<Level> dimension = player.level().dimension();
+        //? if <1.21.10
         String name = player.getGameProfile().getName();
+        //? if >=1.21.10
+        /*String name = player.getName().getString();*/
         List<MutableComponent> pos = PosUtils.pos("Shared Location", position.x, position.y, position.z, dimension);
         MutableComponent component = Component.literal("%s at".formatted(name)).append(" ").append(pos.get(0));
         if (pos.size() > 2) component.append("->").append(pos.get(2));

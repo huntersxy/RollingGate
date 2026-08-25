@@ -33,7 +33,10 @@ public class RollingGate {
         NeoForge.EVENT_BUS.addListener(RollingGateNetwork::onPlayerLoggedOut);
         NeoForge.EVENT_BUS.addListener(RollingGateNetwork::onServerStopped);
         SERVER_RULE_MANAGER.compileContent();
+        //? if <1.21.10
         if (FMLEnvironment.dist.isClient()) {
+        //? if >=1.21.10
+        /*if (FMLEnvironment.getDist().isClient()) {*/
             Class<?> clientClass = RollingGate.class.getClassLoader().loadClass("dev.anvilcraft.rg.client.RollingGateClient");
             try {
                 Method setup = clientClass.getMethod("onClientSetup", ModContainer.class);

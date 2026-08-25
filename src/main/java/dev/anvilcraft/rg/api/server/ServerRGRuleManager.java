@@ -198,12 +198,18 @@ public class ServerRGRuleManager extends RGRuleManager {
         }
 
         private boolean checkPermission(@NotNull CommandSourceStack source) {
+            //? if <26
             if (source.hasPermission(Commands.LEVEL_GAMEMASTERS)) return true;
+            //? if >=26
+            /*if (Commands.LEVEL_GAMEMASTERS.check(source.permissions())) return true;*/
             if (!source.isPlayer()) return false;
             ServerPlayer player = source.getPlayer();
             if (player == null) return false;
             if (!source.getServer().isSingleplayer()) return false;
+            //? if <1.21.10
             return source.getServer().isSingleplayerOwner(player.getGameProfile());
+            //? if >=1.21.10
+            /*return source.getServer().isSingleplayerOwner(player.nameAndId());*/
         }
 
         private @NotNull CompletableFuture<Suggestions> suggestRuleCategories(final CommandContext<CommandSourceStack> context, final SuggestionsBuilder builder) {
@@ -246,7 +252,10 @@ public class ServerRGRuleManager extends RGRuleManager {
                     categoryComponent.withStyle(
                         Style.EMPTY
                             .applyFormat(ChatFormatting.AQUA)
+                        //? if <1.21.8
                             .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/%s category %s".formatted(literal, category)))
+                        //? if >=1.21.8
+                        /*.withClickEvent(new ClickEvent.RunCommand("/%s category %s".formatted(literal, category)))*/
                     );
                     categoriesComponent.append(categoryComponent);
                 }
@@ -296,8 +305,14 @@ public class ServerRGRuleManager extends RGRuleManager {
                     style = style.withColor(ChatFormatting.GRAY);
                 }
                 if (!isSelect) {
+                    //? if <1.21.8
                     style = style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TranslationUtil.trans("rolling_gate.command.rule.select.hover")));
+                    //? if >=1.21.8
+                    /*style = style.withHoverEvent(new HoverEvent.ShowText(TranslationUtil.trans("rolling_gate.command.rule.select.hover")));*/
+                    //? if <1.21.8
                     style = style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/%s %s %s".formatted(literal, rule.name(), string)));
+                    //? if >=1.21.8
+                    /*style = style.withClickEvent(new ClickEvent.RunCommand("/%s %s %s".formatted(literal, rule.name(), string)));*/
                 }
                 result.append(component.withStyle(style));
             }
@@ -320,7 +335,10 @@ public class ServerRGRuleManager extends RGRuleManager {
                 MutableComponent name = TranslationUtil.trans(rule.getNameTranslationKey());
                 component.append(name);
                 MutableComponent hover = TranslationUtil.trans(rule.getDescriptionTranslationKey());
+                //? if <1.21.8
                 name.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover)));
+                //? if >=1.21.8
+                /*name.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent.ShowText(hover)));*/
                 MutableComponent values = this.getValues(rule);
                 component.append(" ").append(values);
                 context.getSource().sendSuccess(() -> component, false);
@@ -340,7 +358,10 @@ public class ServerRGRuleManager extends RGRuleManager {
                     .append("]")
                     .withStyle(Style.EMPTY
                         .applyFormat(ChatFormatting.AQUA)
+                    //? if <1.21.8
                         .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/%s default %s %s".formatted(literal, rule.name(), value)))
+                    //? if >=1.21.8
+                        /*.withClickEvent(new ClickEvent.SuggestCommand("/%s default %s %s".formatted(literal, rule.name(), value)))*/
                     );
                 result.append(" ").append(setDefault);
                 context.getSource().sendSuccess(() -> result, false);

@@ -25,8 +25,10 @@ public class ModCommands {
 
     public static void notifyPlayersCommandsChanged(MinecraftServer server) {
         if (server == null) return;
-        server.tell(new TickTask(server.getTickCount(), () ->
-        {
+        //? if <1.21.8
+        server.tell(new TickTask(server.getTickCount(), () -> {
+        //? if >=1.21.8
+        /*server.schedule(new TickTask(server.getTickCount(), () -> {*/
             try {
                 for (ServerPlayer player : server.getPlayerList().getPlayers()) {
                     server.getCommands().sendCommands(player);

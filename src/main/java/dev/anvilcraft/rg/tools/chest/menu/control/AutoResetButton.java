@@ -3,6 +3,8 @@ package dev.anvilcraft.rg.tools.chest.menu.control;
 import dev.anvilcraft.rg.api.server.TranslationUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Style;
+//? if >=26.2
+/*import net.minecraft.world.item.DyeColor;*/
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
@@ -47,5 +49,8 @@ public class AutoResetButton extends Button {
         this.addTurnOnFunction(this::turnOffWithoutFunction);
     }
 
+    //? if <26.2
     public static final AutoResetButton NONE = new AutoResetButton("rolling_gate.chest_menu.button.none", Items.RED_STAINED_GLASS_PANE);
+    //? if >=26.2
+    /*public static final AutoResetButton NONE = new AutoResetButton("rolling_gate.chest_menu.button.none", Items.STAINED_GLASS_PANE.pick(DyeColor.RED));*/
 }

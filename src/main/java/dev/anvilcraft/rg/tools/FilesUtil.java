@@ -29,8 +29,11 @@ import java.util.function.Function;
 public abstract class FilesUtil {
     public static final Gson GSON = new GsonBuilder()
         .setPrettyPrinting()
-        .registerTypeHierarchyAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
         .registerTypeHierarchyAdapter(ResourceKey.class, new DimTypeSerializer())
+        //? if <1.21.8
+        .registerTypeHierarchyAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
+        //? if >=1.21.8
+        /*.registerTypeHierarchyAdapter(ResourceLocation.class, new IdSerializer())*/
         .registerTypeHierarchyAdapter(ChatFormatting.class, new ChatFormattingSerializer())
         .create();
     protected Gson gson = GSON;
@@ -54,7 +57,10 @@ public abstract class FilesUtil {
         GsonBuilder builder = new GsonBuilder()
             .setPrettyPrinting()
             .registerTypeHierarchyAdapter(ResourceKey.class, new DimTypeSerializer())
+            //? if <1.21.8
             .registerTypeHierarchyAdapter(ResourceLocation.class, new ResourceLocation.Serializer());
+        //? if >=1.21.8
+        /*.registerTypeHierarchyAdapter(ResourceLocation.class, new IdSerializer());*/
         gson.accept(builder);
         this.gson = builder.create();
     }

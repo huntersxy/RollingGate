@@ -18,7 +18,10 @@ import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
+//? if <1.21.8
 import net.neoforged.neoforge.network.PacketDistributor;
+//? if >=1.21.8
+/*import net.neoforged.neoforge.client.network.ClientPacketDistributor;*/
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -53,7 +56,10 @@ public class RollingGateClient {
     }
 
     public static void onLoggingIn(final @NotNull ClientPlayerNetworkEvent.LoggingIn event) {
+        //? if <1.21.8
         PacketDistributor.sendToServer(new ServerRulesHelloPayload());
+        //? if >=1.21.8
+        /*ClientPacketDistributor.sendToServer(new ServerRulesHelloPayload());*/
     }
 
     public static void onLoggingOut(final @NotNull ClientPlayerNetworkEvent.LoggingOut event) {
