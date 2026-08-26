@@ -30,6 +30,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Read Mod version
+        id: mod_version
+        shell: bash
+        run: |
+          version=$(sed -n 's/^mod_version=//p' gradle.properties | head -n 1)
+          test -n "$version"
+          echo "value=$version" >> "$GITHUB_OUTPUT"
+
       - name: Validate Gradle wrapper
         uses: gradle/actions/wrapper-validation@v3
 
@@ -68,7 +76,7 @@ jobs:
       - name: Upload debug artifact
         uses: actions/upload-artifact@v4
         with:
-          name: RollingGate-${{ matrix.mcversion }}-build-${{ github.run_number }}
+          name: RollingGate-${{ matrix.mcversion }}-v${{ steps.mod_version.outputs.value }}-build-${{ github.run_number }}
           path: versions/${{ matrix.mcversion }}/build/libs/${{ steps.artifact.outputs.name }}
 
       - name: GameTest
